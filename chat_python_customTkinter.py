@@ -10,6 +10,8 @@ class App(ctk.CTk):
         self.title("Chat App")
 
         self.list_person =[]
+        self.list_chat =[]
+        self.index_chat = 0
         self.get_chats_Net()
       
         self.grid_rowconfigure(0,weight=0)
@@ -48,7 +50,8 @@ class App(ctk.CTk):
 
         self.chatframe = ctk.CTkScrollableFrame(self.rightFrame,corner_radius=0,fg_color="#212222")
         self.chatframe.grid(row=1,column=0,sticky="nswe")
-
+        self.chatframe.grid_columnconfigure(0,weight=1)
+     
         self.footerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0)
         self.footerFrame.grid(row=2,column=0,sticky="nswe")
 
@@ -63,6 +66,7 @@ class App(ctk.CTk):
         self.btn_send.grid(row=0,column=1,padx=5,pady=10)
 
         self.load_chats(self.list_person)
+        self.init_chat(self.list_chat)
 
     def get_chats_Net(self):
         self.list_person=[
@@ -78,6 +82,11 @@ class App(ctk.CTk):
        },
 
         ]
+
+        self.list_chat = [
+         [{'H':'hello'},{'M':'hello'},{"H":"How are you?"},{"M":"I'm good thanks!"}],
+        [{'H':'hello'},{'M':'hello'},{"H":"How old you?"},{"M":"15"}],
+    ]
 
 
     def load_chats(self,ListPerson):
@@ -111,6 +120,18 @@ class App(ctk.CTk):
             self.lbl_divider =ctk.CTkFrame(self.basicFrame,fg_color="#1AA1BF",height=3)
             self.lbl_divider.grid(row=4,column=0,columnspan=2,sticky="nswe",padx=5,pady=5)
 
+    def init_chat(self,list_chat):
+        self.bsk_frame = ctk.CTkFrame(self.chatframe,corner_radius=0,fg_color="red")
+        self.bsk_frame.grid(row=0,column=0,sticky="w")
+
+        self.bsk_frame.grid_columnconfigure((0,1),weight=0)
+        self.bsk_frame.grid_rowconfigure(0,weight=1)
+
+        self.ch = ctk.CTkLabel(self.bsk_frame, text=list(list_chat[0][0].keys())[0], corner_radius=10,font=("arial",20,"bold"),fg_color="#1AA1BF",height=40,width=40)
+        self.ch.grid(row=0,column=0,padx=10,pady=10,sticky="w")
+
+        self.lbl_text = ctk.CTkLabel(self.bsk_frame, text=list_chat[0][0]["H"], font=("arial",15))
+        self.lbl_text.grid(row=0,column=1,padx=10,pady=10,sticky="w")
 
 
 
