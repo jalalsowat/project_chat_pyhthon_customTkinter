@@ -10,10 +10,13 @@ class App(ctk.CTk):
         self.geometry("1024x720")
         self.title("Chat App")
 
+        self.bind('<Return>',self.bt_send_com)
+
         self.list_person =[]
         self.list_chat =[]
         self.list_frames = []
-        self.index_chat = 0
+        self.list_labels_info = []
+        self.index_chat =-1
         self.my_name = ''
         self.get_chats_Net()
       
@@ -26,6 +29,17 @@ class App(ctk.CTk):
         self.upperFrame.grid(row=0,column=0,columnspan=2,sticky="nswe")
 
         self.upperFrame.grid_rowconfigure(0,weight=1)
+        self.upperFrame.grid_columnconfigure((0,2,3),weight=0)
+        self.upperFrame.grid_columnconfigure(1,weight=1)
+
+        self.ch = ctk.CTkLabel(self.upperFrame, text=self.my_name[0], corner_radius=10,font=("arial",16,"bold"),height=30,width=30,fg_color="#03cc62")
+        self.ch.grid(row=0,column=3,padx=10,pady=10,sticky="e")
+
+        self.lbl_text = ctk.CTkLabel(self.upperFrame, text=self.my_name, font=("arial",15)) 
+        self.lbl_text.grid(row =0 , column=2 ,pady=5,sticky="e")
+
+        self.bt_logOut = ctk.CTkButton(self.upperFrame,text="Log Out",fg_color="#037562",height=30,width=100,command=self.bt_logout_com)
+        self.bt_logOut.grid(row=0,column=1,pady=5,sticky="ws")
 
 
         self.lblLogo = ctk.CTkLabel(self.upperFrame,text="Chat App",font=("arial",22,"bold"))
@@ -43,35 +57,36 @@ class App(ctk.CTk):
         self.rightFrame.grid_rowconfigure((0,2),weight=0)
         self.rightFrame.grid_rowconfigure(1,weight=1)
 
-        self.headerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,fg_color="#2B1123")
+        self.headerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,fg_color="#231aa3",height=0)
         self.headerFrame.grid(row=0,column=0,sticky="nswe")
 
         self.headerFrame.grid_rowconfigure(0,weight=1)
+        self.headerFrame.grid_columnconfigure(0,weight=0)
+        self.headerFrame.grid_columnconfigure(1,weight=1)
 
-        self.lblChatName = ctk.CTkLabel(self.headerFrame,text="Ahmed Ali",font=("arial",20,"bold"))
-        self.lblChatName.grid(row=0,column=0,padx=10,pady=10,sticky="w")
+       # self.lblChatName = ctk.CTkLabel(self.headerFrame,text=self.list_person[self.index_chat]["name"],font=("arial",20,"bold"))
+       # self.lblChatName.grid(row=0,column=0,padx=10,pady=10,sticky="w")
 
         self.chatframe = ctk.CTkScrollableFrame(self.rightFrame,corner_radius=0,fg_color="#212222")
         self.chatframe.grid(row=1,column=0,sticky="nswe")
         self.chatframe.grid_columnconfigure(0,weight=1)
      
-        self.footerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0)
+        self.footerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,height=5)
         self.footerFrame.grid(row=2,column=0,sticky="nswe")
 
         self.footerFrame.grid_rowconfigure(0,weight=1)
         self.footerFrame.grid_columnconfigure(0,weight=1)
         self.footerFrame.grid_columnconfigure(1,weight=0)
 
-        self.ent = ctk.CTkEntry(self.footerFrame,placeholder_text="Write here")
-        self.ent.grid(row=0,column=0,padx=5,pady=10,sticky="nswe")
-
-        self.btn_send = ctk.CTkButton(self.footerFrame,text="Send",font=("arial",18),command=self.bt_send_com)
-        self.btn_send.grid(row=0,column=1,padx=5,pady=10)
 
         self.load_chats(self.list_person)
         self.init_chat(None, self.index_chat,self.list_chat[self.index_chat])
 
-    def bt_send_com(self):
+
+    def bt_logout_com(self):
+        pass
+
+    def bt_send_com(self,e=None):
          ent_user = self.ent.get()
          self.ent.delete(0,END)
          if ent_user !='':
@@ -82,7 +97,7 @@ class App(ctk.CTk):
             self.bsk_frame.grid_columnconfigure((0,1),weight=0)
             self.bsk_frame.grid_rowconfigure(0,weight=1)
 
-            self.ch = ctk.CTkLabel(self.bsk_frame, text=self.my_name[0], corner_radius=10,font=("arial",20,"bold"),fg_color="#1AA1BF",height=40,width=40)
+            self.ch = ctk.CTkLabel(self.bsk_frame, text=self.my_name[0], corner_radius=10,font=("arial",20,"bold"),fg_color="#037562",height=30,width=30)
             self.ch.grid(row=0,column=1,padx=10,pady=10)
 
             self.frame_text = ctk.CTkFrame(self.bsk_frame,corner_radius=10,height=30)
@@ -90,13 +105,17 @@ class App(ctk.CTk):
 
             self.lbl_text = ctk.CTkLabel(self.frame_text, text=ent_user, font=("arial",15)) 
             self.lbl_text.pack(padx=10,pady=5)
+
             self.list_frames.append(self.bsk_frame)
+            self.list_labels_info[self.index_chat].configure(text=ent_user)
+            self.list_chat[self.index_chat].append({'M':ent_user})
+
               
               
     
 
     def get_chats_Net(self):
-        self.my_name = "Ali"
+        self.my_name = "Jalal Alsowat"
         self.list_person=[
        {
            "name": "jalal",
@@ -140,10 +159,12 @@ class App(ctk.CTk):
             self.lbl_name = ctk.CTkLabel(self.frameInfo, text=ListPerson[i]["name"], font=("arial",18,"bold"))
             self.lbl_name.grid(row=1,column=0,sticky="w")
             self.lbl_name.bind("<Button-1>", lambda e, a =i,chat=self.list_chat[i] : self.init_chat(e,a,chat))
+            
 
             self.lbl_info = ctk.CTkLabel(self.frameInfo, text=list(self.list_chat[i][-1].values())[0], font=("arial",15))
             self.lbl_info.grid(row=2,column=0,sticky="w")
             self.lbl_info.bind("<Button-1>", lambda e, a =i,chat=self.list_chat[i] : self.init_chat(e,a,chat))
+            self.list_labels_info.append(self.lbl_info)
 
             self.lbl_time = ctk.CTkLabel(self.frameInfo, text=ListPerson[i]["time"], font=("arial",15))
             self.lbl_time.grid(row=3,column=0,sticky="w")
@@ -155,37 +176,66 @@ class App(ctk.CTk):
 
     def init_chat(self,e, index , list_chat):
 
-        for i in range(len(self.list_frames)):
-                self.list_frames[i].grid_forget()
-        self.list_frames = []
-       
-        for i in range(len(list_chat)):
+        if self.index_chat==-1 and self.index_chat!=index:
+           
+            self.ent = ctk.CTkEntry(self.footerFrame,placeholder_text="Write here")
+            self.ent.grid(row=0,column=0,padx=5,pady=10,sticky="nswe")
 
-            stick = "e"
-            row_pos =1
-            ch = self.my_name[0]
+            self.btn_send = ctk.CTkButton(self.footerFrame,text="Send",font=("arial",18),command=self.bt_send_com)
+            self.btn_send.grid(row=0,column=1,padx=5,pady=10)
 
-            if list(list_chat[i].keys())[0]=="H":
-                 stick = "w"
-                 row_pos = 0
-                 ch = self.list_person[index]["name"][0]
+          
+
+        if self.index_chat != index:
+            self.index_chat = index
+
+            self.headerFrame.grid_forget()
+            self.headerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,fg_color="#231aa3",height=0)
+            self.headerFrame.grid(row=0,column=0,sticky="nswe")
+          
+            self.ch = ctk.CTkLabel(self.headerFrame, text=self.list_person[index]["name"][0], corner_radius=10,font=("arial",16,"bold"),fg_color="#1AA1BF",height=30,width=30)
+            self.ch.grid(row=0,column=0,padx=10,pady=10)
+
+            self.lbl_text = ctk.CTkLabel(self.headerFrame, text=self.list_person[index]["name"], font=("arial",15)) 
+            self.lbl_text.grid(row =0 , column=1 ,pady=5,sticky="w")
+                      
+
+            for i in range(len(self.list_frames)):
+                    self.list_frames[i].grid_forget()
+            self.list_frames = []
 
 
-            self.bsk_frame = ctk.CTkFrame(self.chatframe,corner_radius=0,fg_color="transparent")
-            self.bsk_frame.grid(row=i,column=0,sticky=stick)
+        
+            for i in range(len(list_chat)):
 
-            self.bsk_frame.grid_columnconfigure((0,1),weight=0)
-            self.bsk_frame.grid_rowconfigure(0,weight=1)
+                stick = "e"
+                row_pos =1
+                ch = self.my_name[0]
+                color ="#037562"
 
-            self.ch = ctk.CTkLabel(self.bsk_frame, text=ch, corner_radius=10,font=("arial",20,"bold"),fg_color="#1AA1BF",height=40,width=40)
-            self.ch.grid(row=0,column=row_pos,padx=10,pady=10)
+                if list(list_chat[i].keys())[0]=="H":
+                    stick = "w"
+                    row_pos = 0
+                    ch = self.list_person[index]["name"][0]
+                    color = "#1AA1BF"
 
-            self.frame_text = ctk.CTkFrame(self.bsk_frame,corner_radius=10,height=30)
-            self.frame_text.grid(row=0,column=1- row_pos,padx=10,pady=10)
 
-            self.lbl_text = ctk.CTkLabel(self.frame_text, text=list(list_chat[i].values())[0], font=("arial",15)) 
-            self.lbl_text.pack(padx=10,pady=5)
-            self.list_frames.append(self.bsk_frame)
+
+                self.bsk_frame = ctk.CTkFrame(self.chatframe,corner_radius=0,fg_color="transparent")
+                self.bsk_frame.grid(row=i,column=0,sticky=stick)
+
+                self.bsk_frame.grid_columnconfigure((0,1),weight=0)
+                self.bsk_frame.grid_rowconfigure(0,weight=1)
+
+                self.ch = ctk.CTkLabel(self.bsk_frame, text=ch, corner_radius=5,font=("arial",20,"bold"),fg_color=color,height=30,width=30)
+                self.ch.grid(row=0,column=row_pos,padx=10,pady=10)
+
+                self.frame_text = ctk.CTkFrame(self.bsk_frame,corner_radius=10,height=30)
+                self.frame_text.grid(row=0,column=1- row_pos,padx=10,pady=10)
+
+                self.lbl_text = ctk.CTkLabel(self.frame_text, text=list(list_chat[i].values())[0], font=("arial",15)) 
+                self.lbl_text.pack(padx=10,pady=5)
+                self.list_frames.append(self.bsk_frame)
 
 
 
