@@ -1,5 +1,12 @@
 from tkinter import END
 import customtkinter as ctk
+from threading import Thread
+import sounddevice as sd
+from scipy.io.wavfile import write
+import wavio as wv
+
+freq = 44100
+duration =5
 
 ctk.set_appearance_mode("Dark")
 ctk.set_window_scaling(0.7)
@@ -16,7 +23,10 @@ class App(ctk.CTk):
         self.list_chat =[]
         self.list_frames = []
         self.list_labels_info = []
+
+        self.recording = 0
         self.index_chat =-1
+        self.index_mode = 0 # 0==>text   1==>recoding  2==>stop record
         self.my_name = ''
         self.get_chats_Net()
       
@@ -89,30 +99,44 @@ class App(ctk.CTk):
     def bt_send_com(self,e=None):
          ent_user = self.ent.get()
          self.ent.delete(0,END)
-         if ent_user !='':
-              
-            self.bsk_frame = ctk.CTkFrame(self.chatframe,corner_radius=0,fg_color="transparent")
-            self.bsk_frame.grid(row=len(self.list_frames),column=0,sticky='e')
+         
+         if self.index_mode == 0:
+            if ent_user !='':
+                
+                self.bsk_frame = ctk.CTkFrame(self.chatframe,corner_radius=0,fg_color="transparent")
+                self.bsk_frame.grid(row=len(self.list_frames),column=0,sticky='e')
 
-            self.bsk_frame.grid_columnconfigure((0,1),weight=0)
-            self.bsk_frame.grid_rowconfigure(0,weight=1)
+                self.bsk_frame.grid_columnconfigure((0,1),weight=0)
+                self.bsk_frame.grid_rowconfigure(0,weight=1)
 
-            self.ch = ctk.CTkLabel(self.bsk_frame, text=self.my_name[0], corner_radius=10,font=("arial",20,"bold"),fg_color="#037562",height=30,width=30)
-            self.ch.grid(row=0,column=1,padx=10,pady=10)
+                self.ch = ctk.CTkLabel(self.bsk_frame, text=self.my_name[0], corner_radius=10,font=("arial",20,"bold"),fg_color="#037562",height=30,width=30)
+                self.ch.grid(row=0,column=1,padx=10,pady=10)
 
-            self.frame_text = ctk.CTkFrame(self.bsk_frame,corner_radius=10,height=30)
-            self.frame_text.grid(row=0,column=0,padx=10,pady=10)
+                self.frame_text = ctk.CTkFrame(self.bsk_frame,corner_radius=10,height=30)
+                self.frame_text.grid(row=0,column=0,padx=10,pady=10)
 
-            self.lbl_text = ctk.CTkLabel(self.frame_text, text=ent_user, font=("arial",15)) 
-            self.lbl_text.pack(padx=10,pady=5)
+                self.lbl_text = ctk.CTkLabel(self.frame_text, text=ent_user, font=("arial",15)) 
+                self.lbl_text.pack(padx=10,pady=5)
 
-            self.list_frames.append(self.bsk_frame)
-            self.list_labels_info[self.index_chat].configure(text=ent_user)
-            self.list_chat[self.index_chat].append({'M':ent_user})
+                self.list_frames.append(self.bsk_frame)
+                self.list_labels_info[self.index_chat].configure(text=ent_user)
+                self.list_chat[self.index_chat].append({'M':ent_user})
+            else:
+                t1 = Thread(target=self.record_fcn)
+                t1.start()
+                self.btn_send.configure(text="Stop")
+                self.index = 1
+         elif self.index_mode == 1:
+            print(self.recording)
+            sd.stop()
+            print(self.recording)
+            wv.write("recording1.wav", self.recording, freq, sampwidth=2)
+            self.index_mode = 2 
 
-              
-              
-    
+    def record_fcn(self):
+        self.recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
+
+
 
     def get_chats_Net(self):
         self.my_name = "Jalal Alsowat"
@@ -181,8 +205,9 @@ class App(ctk.CTk):
             self.ent = ctk.CTkEntry(self.footerFrame,placeholder_text="Write here")
             self.ent.grid(row=0,column=0,padx=5,pady=10,sticky="nswe")
 
-            self.btn_send = ctk.CTkButton(self.footerFrame,text="Send",font=("arial",18),command=self.bt_send_com)
+            self.btn_send = ctk.CTkButton(self.footerFrame,text="Send\Rec",font=("arial",18),command=self.bt_send_com)
             self.btn_send.grid(row=0,column=1,padx=5,pady=10)
+        
 
           
 
