@@ -125,17 +125,20 @@ class App(ctk.CTk):
                 t1 = Thread(target=self.record_fcn)
                 t1.start()
                 self.btn_send.configure(text="Stop")
-                self.index = 1
+                self.index_mode = 1
          elif self.index_mode == 1:
             print(self.recording)
             sd.stop()
             print(self.recording)
-            wv.write("recording1.wav", self.recording, freq, sampwidth=2)
+            print("2")
+            wv.write("recording.wav", self.recording, freq, sampwidth=2)
+            print("22")
             self.index_mode = 2 
 
     def record_fcn(self):
+        print("jalal 1")
         self.recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
-
+        print("jalal 12")
 
 
     def get_chats_Net(self):
