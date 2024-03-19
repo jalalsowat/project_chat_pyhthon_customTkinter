@@ -4,9 +4,10 @@ from threading import Thread
 import sounddevice as sd
 from scipy.io.wavfile import write
 import wavio as wv
+import time
 
 freq = 44100
-duration =5
+duration =5*60
 
 ctk.set_appearance_mode("Dark")
 ctk.set_window_scaling(0.7)
@@ -23,6 +24,9 @@ class App(ctk.CTk):
         self.list_chat =[]
         self.list_frames = []
         self.list_labels_info = []
+
+        self.time1 = 0
+        self.time2 = 0
 
         self.recording = 0
         self.index_chat =-1
@@ -99,7 +103,6 @@ class App(ctk.CTk):
     def bt_send_com(self,e=None):
          ent_user = self.ent.get()
          self.ent.delete(0,END)
-         
          if self.index_mode == 0:
             if ent_user !='':
                 
@@ -122,23 +125,23 @@ class App(ctk.CTk):
                 self.list_labels_info[self.index_chat].configure(text=ent_user)
                 self.list_chat[self.index_chat].append({'M':ent_user})
             else:
+                self.time1 = time.time()
                 t1 = Thread(target=self.record_fcn)
                 t1.start()
                 self.btn_send.configure(text="Stop")
                 self.index_mode = 1
          elif self.index_mode == 1:
-            print(self.recording)
+            #print(self.recording)
+            self.time2 = time.time()
+            duration = self.time2 -self.time1
             sd.stop()
-            print(self.recording)
-            print("2")
-            wv.write("recording.wav", self.recording, freq, sampwidth=2)
-            print("22")
+            #print(self.recording)
+            wv.write("recording.wav", self.recording[0:int(duration*freq)], freq, sampwidth=2)
+            self.btn_send.configure(text="Send\Rec")
             self.index_mode = 2 
 
     def record_fcn(self):
-        print("jalal 1")
         self.recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
-        print("jalal 12")
 
 
     def get_chats_Net(self):
