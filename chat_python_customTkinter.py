@@ -46,7 +46,7 @@ class App(ctk.CTk):
         self.upperFrame.grid_columnconfigure((0,2,3),weight=0)
         self.upperFrame.grid_columnconfigure(1,weight=1)
 
-        self.ch = ctk.CTkLabel(self.upperFrame, text=self.my_name[0], corner_radius=10,font=("arial",16,"bold"),height=30,width=30,fg_color="#03cc62")
+        self.ch = ctk.CTkLabel(self.upperFrame, text=self.my_name[0], corner_radius=5,font=("arial",16,"bold"),height=30,width=30,fg_color="#03cc62")
         self.ch.grid(row=0,column=3,padx=10,pady=10,sticky="e")
 
         self.lbl_text = ctk.CTkLabel(self.upperFrame, text=self.my_name, font=("arial",15)) 
@@ -68,7 +68,7 @@ class App(ctk.CTk):
         self.rightFrame.grid(row=1,column=1,sticky="nswe")
 
         self.rightFrame.grid_columnconfigure(0,weight=1)
-        self.rightFrame.grid_rowconfigure((0,2),weight=0)
+        self.rightFrame.grid_rowconfigure((0,2,3),weight=0)
         self.rightFrame.grid_rowconfigure(1,weight=1)
 
         self.headerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,fg_color="#231aa3",height=0)
@@ -84,9 +84,17 @@ class App(ctk.CTk):
         self.chatframe = ctk.CTkScrollableFrame(self.rightFrame,corner_radius=0,fg_color="#212222")
         self.chatframe.grid(row=1,column=0,sticky="nswe")
         self.chatframe.grid_columnconfigure(0,weight=1)
-     
-        self.footerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,height=5)
-        self.footerFrame.grid(row=2,column=0,sticky="nswe")
+
+        self.recFrame = ctk.CTkFrame(self.rightFrame,height=0,fg_color='#212222',corner_radius=0)
+        self.recFrame.grid(row=2,column=0,sticky='nswe') 
+
+        self.recFrame.grid_rowconfigure(0 ,weight=1)
+
+        self.recFrame.grid_columnconfigure((0,2,3,4),weight=0)
+        self.recFrame.grid_columnconfigure(1,weight=1)
+
+        self.footerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,height=0)
+        self.footerFrame.grid(row=3,column=0,sticky="nswe")
 
         self.footerFrame.grid_rowconfigure(0,weight=1)
         self.footerFrame.grid_columnconfigure(0,weight=1)
@@ -139,6 +147,8 @@ class App(ctk.CTk):
             wv.write("recording.wav", self.recording[0:int(duration*freq)], freq, sampwidth=2)
             self.btn_send.configure(text="Send\Rec")
             self.index_mode = 2 
+            self.bt_play = ctk.CTkButton(self.recFrame,text='|>',font=('ariel',18,'bold'),width=30)
+            self.bt_play.grid(row=0, column=0,padx=10,pady=10)
 
     def record_fcn(self):
         self.recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
@@ -224,7 +234,7 @@ class App(ctk.CTk):
             self.headerFrame = ctk.CTkFrame(self.rightFrame,corner_radius=0,fg_color="#231aa3",height=0)
             self.headerFrame.grid(row=0,column=0,sticky="nswe")
           
-            self.ch = ctk.CTkLabel(self.headerFrame, text=self.list_person[index]["name"][0], corner_radius=10,font=("arial",16,"bold"),fg_color="#1AA1BF",height=30,width=30)
+            self.ch = ctk.CTkLabel(self.headerFrame, text=self.list_person[index]["name"][0], corner_radius=5,font=("arial",16,"bold"),fg_color="#1AA1BF",height=30,width=30)
             self.ch.grid(row=0,column=0,padx=10,pady=10)
 
             self.lbl_text = ctk.CTkLabel(self.headerFrame, text=self.list_person[index]["name"], font=("arial",15)) 
