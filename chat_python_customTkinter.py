@@ -27,6 +27,8 @@ class App(ctk.CTk):
 
         self.time1 = 0
         self.time2 = 0
+        self.duration = 0
+        self.exact_duration = 0
 
         self.recording = 0
         self.index_chat =-1
@@ -141,14 +143,41 @@ class App(ctk.CTk):
          elif self.index_mode == 1:
             #print(self.recording)
             self.time2 = time.time()
-            duration = self.time2 -self.time1
+            self.exact_duration = self.time2 -self.time1
             sd.stop()
             #print(self.recording)
-            wv.write("recording.wav", self.recording[0:int(duration*freq)], freq, sampwidth=2)
+            wv.write("recording.wav", self.recording[0:int(self.exact_duration*freq)], freq, sampwidth=2)
             self.btn_send.configure(text="Send\Rec")
             self.index_mode = 2 
-            self.bt_play = ctk.CTkButton(self.recFrame,text='|>',font=('ariel',18,'bold'),width=30)
-            self.bt_play.grid(row=0, column=0,padx=10,pady=10)
+
+            self.bt_play = ctk.CTkButton(self.recFrame,text='|>',font=('ariel',18,'bold'),width=30,command=self.bt_play_com)
+            self.bt_play.grid(row=0, column=0,padx=5,pady=10)
+
+            self.slider_rec = ctk.CTkSlider(self.recFrame)
+            self.slider_rec.grid(row=0,column=1,sticky='we',padx=5,pady=10)
+            self.slider_rec.set(0)
+
+            self.lbl_time = ctk.CTkLabel(self.recFrame,text='00:00|00:00')
+            self.lbl_time.grid(row=0,column=2,padx=5,pady=10)
+
+            self.bt_send_rec = ctk.CTkButton(self.recFrame,text='send',font=('arial',18))
+            self.bt_send_rec.grid(row=0,column=3,padx=5,pady=10)
+
+            self.bt_remove = ctk.CTkButton(self.recFrame,text='X',font=('arial',18,'bold'),width=30,fg_color='#403F3F',hover_color='red')
+            self.bt_remove.grid(row=0,column=4,padx=5,pady=10)
+
+    def bt_play_com(self):
+        sd.play(self.recording,freq)
+        t1 = Thread(target=self.duration_func)
+        t1.start()
+
+    def duration_func(self):
+        while(self.duration < self.exact_duration):
+            self.duration += 1
+            self.lbl_time.configure(text=self.duration)
+            self.slider_rec.set(self.duration/self.exact_duration)
+            time.sleep(1)
+
 
     def record_fcn(self):
         self.recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
